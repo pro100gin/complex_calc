@@ -1,6 +1,6 @@
 #include "../include/operations.h"
 
-char *plugin_name = "sub";
+char plugin_name[80] = "sub";
 
 m_complex* sub(m_complex *first, m_complex *second){
 	m_complex *ans = malloc(sizeof(m_complex));

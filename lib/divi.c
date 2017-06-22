@@ -1,6 +1,6 @@
 #include "../include/operations.h"
 
-char *plugin_name = "divi";
+char plugin_name[80] = "divi";
 
 m_complex* divi(m_complex *first, m_complex *second){
 	m_complex *ans = malloc(sizeof(m_complex));

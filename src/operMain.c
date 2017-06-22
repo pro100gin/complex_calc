@@ -1,5 +1,4 @@
-//#include "../include/main.h"
-#include "../include/operations.h"
+#include "../include/main.h"
 
 char** file_filter(int *file_count){
     int len;
@@ -8,7 +7,7 @@ char** file_filter(int *file_count){
     int i = 0;
     int k = 0;
     (*file_count)=0;
-    (*file_count) = scandir("../lib", &entry, 0, alphasort);
+    (*file_count) = scandir("lib", &entry, 0, alphasort);
     if(*file_count<0){
        perror("scandir error");
        exit(-1);
@@ -48,27 +47,28 @@ int main(){
 	char ch, dir[80];
 
 	m_complex* (**func) (m_complex*, m_complex*);
-	chdir("..");
+	//chdir("..");
 	chdir("lib");
 	getcwd(dir, 255);
 	void* bd;
 	char **name;
 
-	name = malloc(count * sizeof(char));
+	name = malloc(count*sizeof(char*));
 	func = malloc(count * 8 /*sizeof(m_complex (*) (m_complex*, m_complex*))*/);
-	//getchar();
+	getchar();
 	for(i = 0; i< count; ++i){
 		char path[80];
 		sprintf(path, "%s/%s",dir, plugins[i]);
+		printf("%s\n", path);
 		if(!(bd = dlopen(path, RTLD_NOW))){
 			perror("dlopen error");
-			exit(-1);
+			//exit(-1);
 		}
 		name[i] = dlsym(bd, "plugin_name");
+		printf("%s\n", name[i]);
 		func[i] = dlsym(bd, name[i]);
 		getchar();
 	}
-	getchar();
 
 	printf("\033[2J");
 	printf("\033[0;0f");
@@ -76,70 +76,30 @@ int main(){
 		for(i = 0; i< count; ++i){
 			printf("%d. %s\n", i+1, name[i]);
 		}
-		//printf("1. Add\n2. Sub\n3. Mul\n4. Div\n5. Quit\n");
+		printf("%d. exit\n", count + 1);
 		ch = getchar();
 		printf("\033[2J");
 		printf("\033[0;0f");
-		switch (ch){
-			case '1':
-				printf("Input re of 1st number:\n");
-				scanf("%lf", &first->re);
-				printf("\nInput im of 1st number:\n");
-				scanf("%lf", &first->im);
-				printf("\nInput re of 2nd number:\n");
-				scanf("%lf", &second->re);
-				printf("\nInput im of 2nd number:\n");
-				scanf("%lf", &second->im);
-				//ans = add(first, second);
-				ans = func[0] (first, second);
-				printf("\nans: %.3lf %.3lfi\n", ans->re, ans->im);
-				break;
-			case '2':
-				printf("Input re of 1st number: ");
-				scanf("%lf", &first->re);
-				printf("\nInput im of 1st number: ");
-				scanf("%lf", &first->im);
-				printf("\nInput re of 2nd number: ");
-				scanf("%lf", &second->re);
-				printf("\nInput im of 2nd number: ");
-				scanf("%lf", &second->im);
-				//ans = sub(first, second);
-				ans = func[1] (first, second);
-				printf("\nans: %.3lf %.3lfi\n", ans->re, ans->im);
-				break;
-			case '3':
-				printf("Input re of 1st number: ");
-				scanf("%lf", &first->re);
-				printf("\nInput im of 1st number: ");
-				scanf("%lf", &first->im);
-				printf("\nInput re of 2nd number: ");
-				scanf("%lf", &second->re);
-				printf("\nInput im of 2nd number: ");
-				scanf("%lf", &second->im);
-				ans = func[2] (first, second);
-				//ans = mult(first, second);
-				printf("\nans: %.3lf %.3lfi\n", ans->re, ans->im);
-				break;
-			case '4':
-				printf("Input re of 1st number: ");
-				scanf("%lf", &first->re);
-				printf("\nInput im of 1st number: ");
-				scanf("%lf", &first->im);
-				printf("\nInput re of 2nd number: ");
-				scanf("%lf", &second->re);
-				printf("\nInput im of 2nd number: ");
-				scanf("%lf", &second->im);
-				ans = func[3] (first, second);
-				//ans = divi(first, second);
-				printf("\nans: %.3lf %.3lfi\n", ans->re, ans->im);
-				break;
-			case '5':
-				exit(1);
+		if(ch>='0'&&ch<='3'){
+			printf("Input re of 1st number:\n");
+			scanf("%lf", &first->re);
+			printf("\nInput im of 1st number:\n");
+			scanf("%lf", &first->im);
+			printf("\nInput re of 2nd number:\n");
+			scanf("%lf", &second->re);
+			printf("\nInput im of 2nd number:\n");
+			scanf("%lf", &second->im);
+			ans = func[ch-49] (first, second);
+			printf("\nans: %.3lf %.3lfi\n", ans->re, ans->im);
+			ch = getchar();
+			ch = getchar();
 		}
-		ch = getchar();
-		ch = getchar();
+		else if(ch - 49 == count){
+			break;
+		}
 		printf("\033[2J");
 		printf("\033[0;0f");
 	}
+	dlclose(bd);
 	return 0;
 }
